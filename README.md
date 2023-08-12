@@ -8,4 +8,5 @@ data retrieved from this link: https://ourworldindata.org/explorers/coronavirus-
 
 SQL codes used for the exploration of data.
 
---
+--totalcases vs total death worldwide
+
