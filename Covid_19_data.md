@@ -71,4 +71,45 @@ From `coherent-span-381814.covid.Covid_deaths`
 GROUP BY location
 order by TotalDeathCount desc
 
+- Showing contintents with the highest death count per population
 
+Select continent, MAX(cast(Total_deaths as int)) as TotalDeathCount
+From `coherent-span-381814.covid.Covid_deaths`
+--Where location like '%states%'
+Where continent is not null 
+Group by continent
+order by TotalDeathCount desc
+
+
+
+
+-- Total Population vs Vaccinations
+-- Shows Percentage of Population that has recieved at least one Covid Vaccine
+
+Select dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations,
+SUM(vac.new_vaccinations) OVER (Partition by dea.Location Order by dea.location, dea.Date) as RollingPeopleVaccinated
+--, (RollingPeopleVaccinated/population)*100
+From `coherent-span-381814.covid.Covid_deaths` dea
+Join `coherent-span-381814.covid.covid_vaccination` vac
+	On dea.location = vac.location
+	and dea.date = vac.date
+where dea.continent is not null 
+order by 2,3
+
+
+
+--CTE
+
+WITH PopvsVac 
+AS
+(
+  Select dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations,
+SUM(vac.new_vaccinations) OVER (Partition by dea.Location Order by dea.location, dea.Date) as RollingPeopleVaccinated
+From `coherent-span-381814.covid.Covid_deaths` dea
+Join `coherent-span-381814.covid.covid_vaccination` vac
+	On dea.location = vac.location
+	and dea.date = vac.date
+where dea.continent is not null 
+)
+Select *, (RollingPeopleVaccinated/Population)*100 
+From PopvsVac
